@@ -591,45 +591,63 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="px-3 py-3 bg-gradient-to-br from-chart-2/5 to-chart-3/5 rounded-lg border border-chart-2/20">
-                  <div className="grid grid-cols-2 gap-3 text-center">
-                    <div>
-                      <div className="flex items-center justify-center gap-1 mb-1">
-                        <Icons.Growth className="w-3 h-3 text-chart-2" />
-                        <span className="text-xs text-muted-foreground">Stage</span>
+                <div className="px-4 py-4 bg-gradient-to-br from-primary/10 via-chart-2/5 to-chart-3/10 rounded-2xl border border-primary/30 shadow-lg">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-1 mb-2">
+                        <div className="w-5 h-5 bg-primary/20 rounded-lg flex items-center justify-center">
+                          <Icons.Growth className="w-3 h-3 text-primary" />
+                        </div>
+                        <span className="text-xs text-muted-foreground font-medium">Stage</span>
                       </div>
-                      <Badge variant="outline" className="text-xs capitalize font-mono">
+                      <Badge variant="outline" className="text-xs capitalize font-mono bg-background/50 border-primary/30 text-primary">
                         {currentStage}
                       </Badge>
                     </div>
-                    <div>
-                      <div className="flex items-center justify-center gap-1 mb-1">
-                        <Icons.Flame className="w-3 h-3 text-chart-3" />
-                        <span className="text-xs text-muted-foreground">Badges</span>
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-1 mb-2">
+                        <div className="w-5 h-5 bg-chart-3/20 rounded-lg flex items-center justify-center">
+                          <Icons.Flame className="w-3 h-3 text-chart-3" />
+                        </div>
+                        <span className="text-xs text-muted-foreground font-medium">Badges</span>
                       </div>
-                      <span className="data-sm font-bold text-foreground">{userBadges.length}</span>
+                      <span className="data-sm font-bold text-chart-3">{userBadges.length}</span>
                     </div>
                   </div>
                 </div>
 
                 {weeklyBudget > 0 && (
-                  <div className="px-3 py-2 bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg border border-primary/20">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Icons.Stability className="w-3 h-3 text-primary" />
-                        <span className="text-xs text-muted-foreground">Weekly</span>
+                  <div className="relative overflow-hidden px-4 py-4 bg-gradient-to-br from-chart-2/10 via-accent/5 to-primary/10 rounded-2xl border border-chart-2/30 shadow-lg">
+                    <div className="absolute inset-0 bg-gradient-to-br from-chart-2/5 to-accent/5 opacity-30"></div>
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 bg-chart-2/20 rounded-lg flex items-center justify-center">
+                            <Icons.Stability className="w-3 h-3 text-chart-2" />
+                          </div>
+                          <span className="text-sm font-semibold text-foreground">Weekly</span>
+                        </div>
+                        <span className="data-base font-bold text-chart-2">{formatCurrency(weeklyBudget)}</span>
                       </div>
-                      <span className="data-sm font-bold text-foreground">{formatCurrency(weeklyBudget)}</span>
-                    </div>
-                    <div className="mt-1">
-                      <div className="w-full bg-muted/50 rounded-full h-1.5">
-                        <div 
-                          className="bg-gradient-to-r from-primary to-accent h-1.5 rounded-full transition-all duration-300" 
-                          style={{ width: `${Math.min((currentSpending / weeklyBudget) * 100, 100)}%` }}
-                        ></div>
+                      <div className="mb-2">
+                        <div className="w-full bg-background/20 rounded-full h-2.5 shadow-inner">
+                          <div 
+                            className={cn(
+                              "h-2.5 rounded-full transition-all duration-500 shadow-sm",
+                              (currentSpending / weeklyBudget) > 0.8 
+                                ? "bg-gradient-to-r from-destructive to-orange-500"
+                                : "bg-gradient-to-r from-chart-2 via-accent to-primary"
+                            )}
+                            style={{ width: `${Math.min((currentSpending / weeklyBudget) * 100, 100)}%` }}
+                          ></div>
+                        </div>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {formatCurrency(weeklyBudget - currentSpending)} remaining
+                      <p className="text-xs font-medium">
+                        <span className={cn(
+                          weeklyBudget - currentSpending < 0 ? "text-destructive" : "text-muted-foreground/80"
+                        )}>
+                          {formatCurrency(Math.abs(weeklyBudget - currentSpending))} {weeklyBudget - currentSpending < 0 ? "over" : "remaining"}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -638,25 +656,28 @@ export default function Home() {
             </SidebarGroup>
           </SidebarContent>
 
-          <SidebarFooter className="border-t border-border/40 bg-gradient-to-r from-card/80 to-secondary/20">
-            <div className="px-3 py-4 space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Data saved</span>
-                <Badge variant="secondary" className="text-xs">
+          <SidebarFooter className="border-t border-border/20 bg-gradient-to-r from-background/90 via-card/50 to-background/90 backdrop-blur-sm">
+            <div className="px-4 py-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground/80 font-medium">Data saved</span>
+                <Badge variant="secondary" className="text-xs bg-background/50 border-accent/20">
                   {new Date(storage.data.meta.lastSync).toLocaleDateString()}
                 </Badge>
               </div>
-              <div className="text-xs text-muted-foreground text-center">
-                Built for couples • Privacy-first
-              </div>
-              {recentAchievements.length > 0 && (
-                <div className="text-xs text-center">
-                  <span className="text-accent">🎉</span>
-                  <span className="text-muted-foreground ml-1">
-                    {recentAchievements[recentAchievements.length - 1]}
-                  </span>
+              <Separator className="bg-gradient-to-r from-transparent via-border/50 to-transparent" />
+              <div className="text-center">
+                <div className="text-xs text-muted-foreground/70 font-medium">
+                  Built for couples • Privacy-first
                 </div>
-              )}
+                {recentAchievements.length > 0 && (
+                  <div className="text-xs mt-2 px-3 py-2 bg-accent/5 rounded-lg border border-accent/20">
+                    <span className="text-accent">🎉</span>
+                    <span className="text-muted-foreground ml-2 font-medium">
+                      {recentAchievements[recentAchievements.length - 1]}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </SidebarFooter>
         </Sidebar>

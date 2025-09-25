@@ -8,7 +8,12 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Enable static exports for Cloudflare Pages
+  output: 'export',
+  trailingSlash: true,
+  distDir: 'out',
   images: {
+    unoptimized: true, // Required for static export
     remotePatterns: [
       {
         protocol: 'https',

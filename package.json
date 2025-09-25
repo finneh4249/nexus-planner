@@ -7,9 +7,12 @@
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "NODE_ENV=production next build",
+    "build:static": "NODE_ENV=production next build && next export",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy": "npm run build && npx wrangler pages publish out",
+    "cf:deploy": "npx wrangler pages deploy out"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",

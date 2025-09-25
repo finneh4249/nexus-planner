@@ -222,7 +222,7 @@ export default function DebtSnowball() {
                 <div className="space-y-2">
                     <Label htmlFor="bonus-payment" className="text-base">One-Time Bonus Payment</Label>
                     <Input id="bonus-payment" type="number" placeholder="e.g. 500" value={bonusPayment} onChange={e => setBonusPayment(e.target.value)} className="text-lg" />
-                    <p className="text-xs text-muted-foreground">Add any extra amount to see how it accelerates your timeline!</p>
+                    <p className="text-xs text-muted-foreground">Add any extra amount to see how it accelerates our timeline!</p>
                 </div>
             </div>
         </div>
@@ -235,7 +235,7 @@ export default function DebtSnowball() {
                 <Card className="bg-primary/10 border-primary shadow-lg">
                     <CardHeader className="text-center">
                         <CardTitle className="flex items-center justify-center gap-2 text-xl text-primary-foreground tracking-tight">
-                           <Icons.Mission className="text-accent" /> YOUR CURRENT MISSION: DESTROY '{currentMission.debt.name.toUpperCase()}'
+                           <Icons.Mission className="text-accent" /> OUR CURRENT MISSION: DESTROY '{currentMission.debt.name.toUpperCase()}'
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center">

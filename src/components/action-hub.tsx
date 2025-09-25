@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import DebtSnowball from "@/components/debt-avalanche";
+import DebtSnowball from "@/components/debt-snowball";
 import StabilityRoadmap from "@/components/stability-roadmap";
 import { Icons } from "@/components/icons";
 

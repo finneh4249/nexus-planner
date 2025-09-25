@@ -58,7 +58,7 @@ export default function BucketSplitter() {
     const isValid = pIncome > 0 && pEssentials > 0 && pIncome >= pEssentials;
     const isOverspent = pIncome > 0 && pEssentials > pIncome;
 
-    if (!isValid) {
+    if (!isValid && !isOverspent) {
       return { 
         parsedIncome: pIncome || 0,
         parsedEssentials: pEssentials || 0,
@@ -71,16 +71,19 @@ export default function BucketSplitter() {
         finalBlueprint: null
       };
     }
+    
+    const pIncomeGuaranteed = pIncome || 0;
+    const pEssentialsGuaranteed = pEssentials || 0;
 
-    const surplus = pIncome - pEssentials;
-    const essPct = (pEssentials / pIncome) * 100;
+    const surplus = pIncomeGuaranteed - pEssentialsGuaranteed;
+    const essPct = pIncomeGuaranteed > 0 ? (pEssentialsGuaranteed / pIncomeGuaranteed) * 100 : 0;
     const surPct = 100 - essPct;
 
     const totalAlloc = allocation.growth + allocation.stability + allocation.rewards;
     
-    const blueprint = totalAlloc === 100 ? {
+    const blueprint = totalAlloc === 100 && isValid ? {
         essentials: {
-            amount: pEssentials,
+            amount: pEssentialsGuaranteed,
             percentage: essPct
         },
         growth: {
@@ -98,12 +101,12 @@ export default function BucketSplitter() {
     } : null;
 
     return {
-      parsedIncome: pIncome,
-      parsedEssentials: pEssentials,
+      parsedIncome: pIncomeGuaranteed,
+      parsedEssentials: pEssentialsGuaranteed,
       surplusAmount: surplus,
       essentialsPercentage: essPct,
       surplusPercentage: surPct,
-      isValid: true,
+      isValid,
       isOverspent,
       totalAllocationPercentage: totalAlloc,
       finalBlueprint: blueprint
@@ -122,57 +125,74 @@ export default function BucketSplitter() {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
   }
 
+  const realityCheckMessage = () => {
+    if(isOverspent) {
+        return "Your essentials cost more than your income. Let's adjust the numbers to find a starting point.";
+    }
+    if (essentialsPercentage > 75) {
+        return "This is a tight spot, but we'll navigate it together. Every dollar of surplus is a win.";
+    }
+    if (essentialsPercentage > 50) {
+        return "This is your starting point. The goal is to strategically manage your surplus, together.";
+    }
+    return "You're in a great position. Let's put your surplus to work for your future.";
+  }
+  
+  const realityCheckColor = isOverspent || essentialsPercentage > 75 ? "border-destructive bg-destructive/10 text-destructive-foreground" : "border-chart-1 bg-chart-1/10 text-primary";
+
+
   return (
     <Card className="w-full max-w-4xl shadow-2xl">
       <CardHeader>
-        <CardTitle className="text-3xl font-bold tracking-tight text-center font-headline">Nexus Bucket Splitter</CardTitle>
+        <CardTitle className="text-3xl font-bold tracking-tight text-center">Nexus Bucket Splitter</CardTitle>
         <CardDescription className="text-center">
-          A simple, lovable, and complete tool to plan your financial surplus.
+          A simple, lovable, and complete tool to plan your financial surplus, together.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-8">
         {/* Step 1: Inputs */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="income" className="text-base">Combined Monthly Net Income</Label>
-            <Input
-              id="income"
-              type="number"
-              placeholder="e.g., 9500"
-              value={income}
-              onChange={(e) => setIncome(e.target.value)}
-              className="text-base"
-              aria-label="Combined Monthly Net Income"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="essentials" className="text-base">Total Monthly Essentials</Label>
-            <Input
-              id="essentials"
-              type="number"
-              placeholder="e.g., 6732"
-              value={essentials}
-              onChange={(e) => setEssentials(e.target.value)}
-              className="text-base"
-              aria-label="Total Monthly Essentials"
-            />
+        <div className="p-6 border rounded-lg bg-card">
+          <h2 className="text-xl font-semibold tracking-tight text-center">Observe: Your Financial Snapshot</h2>
+          <p className="mb-6 text-center text-muted-foreground">Let's start by looking at our combined finances for the month.</p>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="income" className="text-base">Our Combined Monthly Net Income</Label>
+              <Input
+                id="income"
+                type="number"
+                placeholder="e.g., 9500"
+                value={income}
+                onChange={(e) => setIncome(e.target.value)}
+                className="text-base"
+                aria-label="Our Combined Monthly Net Income"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="essentials" className="text-base">Our Total Monthly Essentials</Label>
+              <Input
+                id="essentials"
+                type="number"
+                placeholder="e.g., 6732"
+                value={essentials}
+                onChange={(e) => setEssentials(e.target.value)}
+                className="text-base"
+                aria-label="Our Total Monthly Essentials"
+              />
+            </div>
           </div>
         </div>
 
         <div className="space-y-8 transition-opacity duration-500 animate-in fade-in">
-          {isOverspent && (
-             <Card className="p-4 text-center border-destructive bg-destructive/10">
-                <p className="font-medium text-destructive-foreground">Your essentials cost more than your income. Let's adjust the numbers to find a starting point.</p>
+          { (isValid || isOverspent) && (
+             <Card className={cn("p-4 text-center", realityCheckColor)}>
+                <p className="font-medium">{realityCheckMessage()}</p>
              </Card>
           )}
 
           {/* Step 2: Reality Check */}
           {isValid && (
             <div className="space-y-4 text-center animate-in fade-in-50 duration-500">
-              <h2 className="text-xl font-semibold tracking-tight font-headline">Your Reality Check</h2>
-              {essentialsPercentage > 50 && (
-                <p className="text-muted-foreground">This is your starting point. The goal is to strategically manage your surplus.</p>
-              )}
+              <h2 className="text-xl font-semibold tracking-tight">Your Reality Check</h2>
               <div className="space-y-2">
                 <Progress value={essentialsPercentage} className="h-6" />
                 <div className="flex justify-between text-sm font-medium">
@@ -186,16 +206,17 @@ export default function BucketSplitter() {
           {/* Step 3: Strategic Allocation */}
           {isValid && (
             <div className="space-y-4 animate-in fade-in-50 duration-700">
-              <h2 className="text-xl font-semibold tracking-tight text-center font-headline">Strategic Allocation of Your Surplus ({formatCurrency(surplusAmount)})</h2>
+              <h2 className="text-xl font-semibold tracking-tight text-center">Adapt: Allocate Our Surplus ({formatCurrency(surplusAmount)})</h2>
+              <p className="text-center text-muted-foreground">Let's decide how we want to use our surplus. These numbers can be changed anytime.</p>
               <TooltipProvider>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   {(['growth', 'stability', 'rewards'] as const).map((bucket) => (
                     <Card key={bucket}>
                       <CardHeader className="flex-row items-center justify-between pb-2">
                         <div className="flex items-center gap-2">
-                          {bucket === 'growth' && <Icons.Growth className="w-6 h-6 text-primary" />}
+                          {bucket === 'growth' && <Icons.Growth className="w-6 h-6 text-chart-1" />}
                           {bucket === 'stability' && <Icons.Stability className="w-6 h-6 text-primary" />}
-                          {bucket === 'rewards' && <Icons.Rewards className="w-6 h-6 text-primary" />}
+                          {bucket === 'rewards' && <Icons.Rewards className="w-6 h-6 text-accent" />}
                           <CardTitle className="text-lg capitalize">{bucket}</CardTitle>
                         </div>
                         <Tooltip>
@@ -224,7 +245,7 @@ export default function BucketSplitter() {
               </TooltipProvider>
               {totalAllocationPercentage !== 100 && (
                 <p className="text-sm font-medium text-center text-destructive">
-                  Your allocations must add up to 100%. Current total: {totalAllocationPercentage}%.
+                  Our allocations must add up to 100%. Current total: {totalAllocationPercentage}%.
                 </p>
               )}
             </div>
@@ -233,12 +254,12 @@ export default function BucketSplitter() {
           {/* Step 4: Final Blueprint */}
           {isValid && finalBlueprint && (
              <div className="space-y-4 animate-in fade-in-50 duration-1000">
-                <h2 className="text-xl font-semibold tracking-tight text-center font-headline">Your Final Blueprint</h2>
-                <Card className="bg-secondary/50">
+                <h2 className="text-xl font-semibold tracking-tight text-center">Reinforce: Our Financial Blueprint</h2>
+                <Card className="bg-secondary/30">
                     <CardContent className="p-6 space-y-4">
                         <div className="grid grid-cols-1 gap-4 text-lg md:grid-cols-2 lg:grid-cols-4">
                             {(['essentials', 'growth', 'stability', 'rewards'] as const).map(key => (
-                                <div key={key} className="p-4 text-center rounded-lg bg-card">
+                                <div key={key} className="p-4 text-center rounded-lg bg-card shadow">
                                     <p className="text-sm font-medium capitalize text-muted-foreground">{key}</p>
                                     <p className="text-2xl font-bold text-primary">{formatCurrency(finalBlueprint[key].amount)}</p>
                                     <p className="font-semibold">{finalBlueprint[key].percentage.toFixed(1)}% of income</p>
@@ -246,8 +267,8 @@ export default function BucketSplitter() {
                             ))}
                         </div>
                         <div className="p-4 text-center rounded-lg bg-accent/20">
-                            <p className="font-semibold text-accent-foreground">Your guilt-free weekly spending:</p>
-                            <p className="text-3xl font-bold text-accent">{formatCurrency(finalBlueprint.rewards.amount / 4.33)}</p>
+                            <p className="font-semibold text-accent-foreground">Celebrate: Our guilt-free weekly spending for the two of us:</p>
+                            <p className="text-3xl font-bold text-accent-foreground">{formatCurrency(finalBlueprint.rewards.amount / 4.33)}</p>
                         </div>
                     </CardContent>
                 </Card>

@@ -37,7 +37,7 @@ const formatCurrency = (amount: number) => {
     }).format(amount);
 };
 
-export default function DebtAvalanche() {
+export default function DebtSnowball() {
   const [debts, setDebts] = React.useState<Debt[]>([]);
   const [newDebt, setNewDebt] = React.useState({ name: "", amount: "", minPayment: "" });
   const [growthAllocation, setGrowthAllocation] = React.useState("");
@@ -71,12 +71,13 @@ export default function DebtAvalanche() {
     const totalMin = debts.reduce((acc, debt) => acc + debt.minPayment, 0);
 
     const isValid = debts.length > 0 && parsedFirepower >= totalMin;
+    
+    // Sort debts by amount (Snowball method)
+    const sDebts = [...debts].sort((a, b) => a.amount - b.amount);
 
     if (!isValid) {
-      return { sortedDebts: [], totalMinPayments: totalMin, monthlyFirepower: parsedFirepower, isValid, timeline: [], finalPayoffDate: null, currentMissionPayment: 0 };
+      return { sortedDebts: sDebts, totalMinPayments: totalMin, monthlyFirepower: parsedFirepower, isValid, timeline: [], finalPayoffDate: null, currentMissionPayment: 0 };
     }
-
-    const sDebts = [...debts].sort((a, b) => a.amount - b.amount);
     
     // Create a mutable copy of debts for simulation
     let simDebts = sDebts.map(d => ({ ...d, balance: d.amount }));
@@ -158,7 +159,7 @@ export default function DebtAvalanche() {
   const currentMission = isValid && timeline.length > 0 ? timeline[0] : null;
 
   return (
-    <Card className="w-full max-w-4xl shadow-2xl">
+    <Card className="w-full max-w-4xl shadow-2xl border-none">
       <CardHeader>
         <CardTitle className="text-3xl font-bold tracking-tight text-center">Debt Snowball</CardTitle>
         <CardDescription className="text-center">

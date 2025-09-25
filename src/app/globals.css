@@ -9,28 +9,28 @@ body {
 @layer base {
   :root {
     --background: 0 0% 98%; /* Soft White */
-    --foreground: 216 19% 8%; /* Charcoal Black */
+    --foreground: 0 0% 7%; /* Charcoal Black */
     --card: 0 0% 100%;
-    --card-foreground: 216 19% 8%;
+    --card-foreground: 0 0% 7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 216 19% 8%;
-    --primary: 215 42% 18%; /* Blueprint Navy */
+    --popover-foreground: 0 0% 7%;
+    --primary: 216 40% 19%; /* Blueprint Navy */
     --primary-foreground: 0 0% 98%;
-    --secondary: 206 50% 60%; /* Blueprint Sky */
-    --secondary-foreground: 215 42% 18%;
-    --muted: 210 13% 55%; /* Slate Gray */
-    --muted-foreground: 216 19% 15%;
-    --accent: 49 97% 59%; /* Volt Yellow */
-    --accent-foreground: 215 42% 18%;
+    --secondary: 207 53% 63%; /* Blueprint Sky */
+    --secondary-foreground: 216 40% 19%;
+    --muted: 210 9% 55%; /* Slate Gray */
+    --muted-foreground: 0 0% 15%;
+    --accent: 50 97% 62%; /* Volt Yellow */
+    --accent-foreground: 216 40% 19%;
     --destructive: 5 100% 69%; /* Volt Coral */
     --destructive-foreground: 0 0% 98%;
-    --border: 210 13% 85%;
+    --border: 210 9% 85%;
     --input: 0 0% 100%;
-    --ring: 215 42% 28%;
-    --chart-1: 151 68% 47%; /* Volt Green */
-    --chart-2: 206 50% 60%; /* Blueprint Sky */
-    --chart-3: 215 42% 18%; /* Blueprint Navy */
-    --chart-4: 49 97% 59%; /* Volt Yellow */
+    --ring: 216 40% 29%;
+    --chart-1: 153 70% 46%; /* Volt Green */
+    --chart-2: 207 53% 63%; /* Blueprint Sky */
+    --chart-3: 216 40% 19%; /* Blueprint Navy */
+    --chart-4: 50 97% 62%; /* Volt Yellow */
     --chart-5: 5 100% 69%; /* Volt Coral */
     --radius: 0.5rem;
     --sidebar-background: 0 0% 98%;
@@ -43,29 +43,29 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 216 19% 8%; /* Charcoal Black */
+    --background: 0 0% 7%; /* Charcoal Black */
     --foreground: 0 0% 98%; /* Soft White */
-    --card: 215 42% 12%; /* Darker Navy */
+    --card: 216 40% 12%; /* Darker Blueprint Navy */
     --card-foreground: 0 0% 98%;
-    --popover: 216 19% 8%;
+    --popover: 0 0% 7%;
     --popover-foreground: 0 0% 98%;
-    --primary: 206 50% 60%; /* Blueprint Sky */
-    --primary-foreground: 215 42% 18%;
-    --secondary: 215 42% 18%; /* Blueprint Navy */
+    --primary: 207 53% 63%; /* Blueprint Sky */
+    --primary-foreground: 216 40% 19%;
+    --secondary: 216 40% 19%; /* Blueprint Navy */
     --secondary-foreground: 0 0% 98%;
-    --muted: 210 13% 35%; /* Darker Slate */
+    --muted: 210 9% 35%; /* Darker Slate Gray */
     --muted-foreground: 0 0% 80%;
-    --accent: 49 97% 59%; /* Volt Yellow */
-    --accent-foreground: 215 42% 18%;
+    --accent: 50 97% 62%; /* Volt Yellow */
+    --accent-foreground: 216 40% 19%;
     --destructive: 5 100% 69%; /* Volt Coral */
-    --destructive-foreground: 215 42% 18%;
-    --border: 215 42% 25%;
-    --input: 215 42% 15%;
-    --ring: 206 50% 70%;
-    --chart-1: 151 68% 47%; /* Volt Green */
-    --chart-2: 206 50% 60%; /* Blueprint Sky */
+    --destructive-foreground: 216 40% 19%;
+    --border: 216 40% 25%;
+    --input: 216 40% 15%;
+    --ring: 207 53% 73%;
+    --chart-1: 153 70% 46%; /* Volt Green */
+    --chart-2: 207 53% 63%; /* Blueprint Sky */
     --chart-3: 0 0% 98%; /* Soft White */
-    --chart-4: 49 97% 59%; /* Volt Yellow */
+    --chart-4: 50 97% 62%; /* Volt Yellow */
     --chart-5: 5 100% 69%; /* Volt Coral */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;

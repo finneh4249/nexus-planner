@@ -83,66 +83,66 @@ export default function DebtAvalanche() {
     
     // Apply one-time bonus payment to the first debt
     if (simDebts.length > 0) {
-      simDebts[0].balance -= parsedBonus;
+      const targetDebt = simDebts.find(d => d.balance > 0);
+      if (targetDebt) {
+        targetDebt.balance -= parsedBonus;
+      }
     }
 
     const timelineResult: TimelineEntry[] = [];
-    let freedCashflow = 0;
     let months = 0;
     let currentDate = new Date();
     
     const extraPayment = parsedFirepower - totalMin;
     let missionPayment = 0;
+    let freedCashflow = 0;
 
     while(simDebts.some(d => d.balance > 0)) {
         months++;
         if (months > 1200) break; // Safety break
 
-        let monthPayment = parsedFirepower + freedCashflow;
+        const targetDebt = simDebts.find(d => d.balance > 0);
+        if (!targetDebt) break;
 
+        // The total amount applied to the target debt this month
+        const targetPaymentAmount = targetDebt.minPayment + extraPayment + freedCashflow;
+
+        if (months === 1) { // Calculate mission payment only on the first month
+          missionPayment = targetPaymentAmount;
+        }
+
+        targetDebt.balance -= targetPaymentAmount;
+
+        // Pay minimums on all other debts
         for (const debt of simDebts) {
-            if(debt.balance <= 0) continue;
-
-            // This is the target debt
-            const targetDebt = simDebts.find(d => d.balance > 0);
-            if (!targetDebt || debt.id !== targetDebt.id) {
-                const payment = Math.min(debt.minPayment, debt.balance);
-                debt.balance -= payment;
-                monthPayment -= payment;
+            if (debt.id !== targetDebt.id && debt.balance > 0) {
+                debt.balance -= debt.minPayment;
             }
         }
         
-        // Apply remaining firepower to the target debt
-        const targetDebt = simDebts.find(d => d.balance > 0);
-        if (targetDebt) {
-             const payment = Math.min(monthPayment, targetDebt.balance);
-             if (months === 1) { // Calculate mission payment only on the first month
-                missionPayment = payment;
-             }
-             targetDebt.balance -= payment;
-        }
-
-        // Check for paid off debts
-        for (const debt of simDebts) {
-            if (debt.balance <= 0 && !timelineResult.find(t => t.debtId === debt.id)) {
-                const payoffDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + months -1, 1);
-                timelineResult.push({
-                    debtId: debt.id,
-                    debtName: debt.name,
-                    payoffDate: payoffDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
-                    startingBalance: debt.amount
-                });
-                freedCashflow += debt.minPayment;
-            }
+        // Check for paid off debts this cycle
+        const newlyPaidOffDebts = simDebts.filter(d => d.balance <= 0 && !timelineResult.find(t => t.debtId === d.id));
+        for (const paidDebt of newlyPaidOffDebts) {
+            const payoffDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + months -1, 1);
+            timelineResult.push({
+                debtId: paidDebt.id,
+                debtName: paidDebt.name,
+                payoffDate: payoffDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
+                startingBalance: paidDebt.amount
+            });
+            freedCashflow += paidDebt.minPayment;
         }
     }
-
+    
     const finalDate = timelineResult.length > 0 ? timelineResult[timelineResult.length - 1].payoffDate : null;
 
-    const timelineWithOriginalDebts = timelineResult.map(t => {
-        const originalDebt = debts.find(d => d.id === t.debtId)!;
-        return { debt: originalDebt, payoffDate: t.payoffDate };
-    });
+    const timelineWithOriginalDebts = timelineResult
+      .sort((a, b) => new Date(a.payoffDate).getTime() - new Date(b.payoffDate).getTime())
+      .map(t => {
+          const originalDebt = debts.find(d => d.id === t.debtId)!;
+          return { debt: originalDebt, payoffDate: t.payoffDate };
+      });
+
 
     return {
       sortedDebts: sDebts,
@@ -155,7 +155,7 @@ export default function DebtAvalanche() {
     };
   }, [debts, growthAllocation, bonusPayment]);
 
-  const currentMission = isValid ? timeline[0] : null;
+  const currentMission = isValid && timeline.length > 0 ? timeline[0] : null;
 
   return (
     <Card className="w-full max-w-4xl shadow-2xl">
@@ -234,7 +234,7 @@ export default function DebtAvalanche() {
                 <Card className="bg-primary/10 border-primary shadow-lg">
                     <CardHeader className="text-center">
                         <CardTitle className="flex items-center justify-center gap-2 text-xl text-primary-foreground tracking-tight">
-                           <Icons.Mission className="text-accent" /> YOUR CURRENT MISSION: DESTROY '{currentMission.debt.name}'
+                           <Icons.Mission className="text-accent" /> YOUR CURRENT MISSION: DESTROY '{currentMission.debt.name.toUpperCase()}'
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center">

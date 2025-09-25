@@ -8,73 +8,40 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 98%; /* Soft White */
-    --foreground: 0 0% 7%; /* Charcoal Black */
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 7%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 7%;
-    --primary: 216 40% 19%; /* Blueprint Navy */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 207 53% 63%; /* Blueprint Sky */
-    --secondary-foreground: 216 40% 19%;
-    --muted: 210 9% 55%; /* Slate Gray */
-    --muted-foreground: 0 0% 15%;
-    --accent: 50 97% 62%; /* Volt Yellow */
-    --accent-foreground: 216 40% 19%;
-    --destructive: 5 100% 69%; /* Volt Coral */
-    --destructive-foreground: 0 0% 98%;
-    --border: 210 9% 85%;
-    --input: 0 0% 100%;
-    --ring: 216 40% 29%;
-    --chart-1: 153 70% 46%; /* Volt Green */
-    --chart-2: 207 53% 63%; /* Blueprint Sky */
-    --chart-3: 216 40% 19%; /* Blueprint Navy */
-    --chart-4: 50 97% 62%; /* Volt Yellow */
-    --chart-5: 5 100% 69%; /* Volt Coral */
+    /* Nexus Professional Dark Theme */
+    --background: 0 0% 10%; /* Blueprint (#1A1A1A) */
+    --foreground: 0 0% 96%; /* Chalk (#F5F5F5) */
+    --card: 0 0% 17%; /* Concrete (#2B2B2B) */
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 17%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 81 100% 50%; /* Volt (#DFFF00) - The Revolution Color */
+    --primary-foreground: 0 0% 10%;
+    --secondary: 0 0% 24%; /* Steel (#3C3C3C) */
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 17%; /* Concrete */
+    --muted-foreground: 0 0% 70%; /* Lighter Slate */
+    --accent: 81 100% 50%; /* Volt (#DFFF00) - Electric Chartreuse */
+    --accent-foreground: 0 0% 10%;
+    --destructive: 5 84% 65%; /* Volt Coral - Softer */
+    --destructive-foreground: 0 0% 96%;
+    --border: 0 0% 24%; /* Steel */
+    --input: 0 0% 17%; /* Concrete */
+    --ring: 81 100% 60%; /* Volt Ring */
+    --chart-1: 81 100% 50%; /* Volt - Primary accent */
+    --chart-2: 153 60% 45%; /* Volt Green - Success states */
+    --chart-3: 207 53% 63%; /* Blueprint Sky - Data viz */
+    --chart-4: 45 95% 58%; /* Volt Yellow - Warnings */
+    --chart-5: 5 84% 65%; /* Volt Coral - Alerts */
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-  .dark {
-    --background: 0 0% 7%; /* Charcoal Black */
-    --foreground: 0 0% 98%; /* Soft White */
-    --card: 216 40% 12%; /* Darker Blueprint Navy */
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 207 53% 63%; /* Blueprint Sky */
-    --primary-foreground: 216 40% 19%;
-    --secondary: 216 40% 19%; /* Blueprint Navy */
-    --secondary-foreground: 0 0% 98%;
-    --muted: 210 9% 35%; /* Darker Slate Gray */
-    --muted-foreground: 0 0% 80%;
-    --accent: 50 97% 62%; /* Volt Yellow */
-    --accent-foreground: 216 40% 19%;
-    --destructive: 5 100% 69%; /* Volt Coral */
-    --destructive-foreground: 216 40% 19%;
-    --border: 216 40% 25%;
-    --input: 216 40% 15%;
-    --ring: 207 53% 73%;
-    --chart-1: 153 70% 46%; /* Volt Green */
-    --chart-2: 207 53% 63%; /* Blueprint Sky */
-    --chart-3: 0 0% 98%; /* Soft White */
-    --chart-4: 50 97% 62%; /* Volt Yellow */
-    --chart-5: 5 100% 69%; /* Volt Coral */
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 17%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 81 100% 50%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 0 0% 24%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 24%;
+    --sidebar-ring: 81 100% 60%;
   }
 }
 
@@ -84,5 +51,114 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Micro-animations for celebrations */
+  @keyframes confetti-fall {
+    0% {
+      transform: translateY(-100vh) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) rotate(360deg);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(252, 220, 60, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(252, 220, 60, 0.8);
+    }
+  }
+  
+  @keyframes success-bounce {
+    0%, 20%, 53%, 80%, 100% {
+      transform: translate3d(0, 0, 0);
+    }
+    40%, 43% {
+      transform: translate3d(0, -30px, 0);
+    }
+    70% {
+      transform: translate3d(0, -15px, 0);
+    }
+    90% {
+      transform: translate3d(0, -4px, 0);
+    }
+  }
+
+  .animate-glow {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+  
+  .animate-success-bounce {
+    animation: success-bounce 1s ease-in-out;
+  }
+  
+  .animate-confetti {
+    animation: confetti-fall 3s linear forwards;
+  }
+  
+  /* Smooth transitions for interactive elements */
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Enhanced focus states following design guidelines */
+  .focus-volt {
+    @apply focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2;
+  }
+  
+  /* Typography utilities based on Nexus design system */
+  .heading-xl {
+    @apply font-heading font-bold text-4xl tracking-tight uppercase;
+  }
+  
+  .heading-lg {
+    @apply font-heading font-bold text-3xl tracking-tight uppercase;
+  }
+  
+  .heading-md {
+    @apply font-heading font-bold text-2xl tracking-tight uppercase;
+  }
+  
+  .heading-sm {
+    @apply font-heading font-semibold text-xl uppercase;
+  }
+  
+  .heading-xs {
+    @apply font-heading font-semibold text-lg uppercase;
+  }
+  
+  .body-lg {
+    @apply font-body text-xl leading-relaxed;
+  }
+  
+  .body-base {
+    @apply font-body text-base leading-relaxed;
+  }
+  
+  .body-sm {
+    @apply font-body text-sm leading-relaxed;
+  }
+  
+  .data-xl {
+    @apply font-mono font-bold text-3xl;
+  }
+  
+  .data-lg {
+    @apply font-mono font-semibold text-xl;
+  }
+  
+  .data-base {
+    @apply font-mono text-base;
+  }
+  
+  .data-sm {
+    @apply font-mono text-sm;
   }
 }

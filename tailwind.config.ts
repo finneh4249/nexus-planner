@@ -10,9 +10,12 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        // Body Copy & General Text - Inter
         body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
-        code: ['monospace'],
+        // Headings & Key UI Text - Inter Tight
+        heading: ['Inter Tight', 'sans-serif'],
+        // Data & Numbers - Roboto Mono
+        mono: ['Roboto Mono', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

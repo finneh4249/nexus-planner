@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useNexusStorage } from "@/lib/storage";
 
 type Debt = {
   id: string;
@@ -38,26 +39,25 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function DebtSnowball() {
-  const [debts, setDebts] = React.useState<Debt[]>([]);
+  const storage = useNexusStorage();
+  const debts = storage.data.debts;
   const [newDebt, setNewDebt] = React.useState({ name: "", amount: "", minPayment: "" });
   const [growthAllocation, setGrowthAllocation] = React.useState("");
   const [bonusPayment, setBonusPayment] = React.useState("");
 
   const addDebt = () => {
     if (newDebt.name && newDebt.amount && newDebt.minPayment) {
-      const debt: Debt = {
-        id: new Date().toISOString(),
+      storage.addDebt({
         name: newDebt.name,
         amount: parseFloat(newDebt.amount),
         minPayment: parseFloat(newDebt.minPayment),
-      };
-      setDebts([...debts, debt]);
+      });
       setNewDebt({ name: "", amount: "", minPayment: "" });
     }
   };
 
   const removeDebt = (id: string) => {
-    setDebts(debts.filter((debt) => debt.id !== id));
+    storage.removeDebt(id);
   };
   
   const handleNewDebtChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,7 +159,7 @@ export default function DebtSnowball() {
   const currentMission = isValid && timeline.length > 0 ? timeline[0] : null;
 
   return (
-    <Card className="w-full max-w-4xl shadow-2xl border-none">
+    <Card className="w-full max-w-4xl mx-auto shadow-2xl border-none">
       <CardHeader>
         <CardTitle className="text-3xl font-bold tracking-tight text-center">Debt Snowball</CardTitle>
         <CardDescription className="text-center">

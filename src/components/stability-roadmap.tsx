@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { useNexusStorage } from "@/lib/storage";
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -31,8 +32,15 @@ const milestones = [
 ];
 
 export default function StabilityRoadmap() {
-  const [currentSavings, setCurrentSavings] = React.useState("");
+  const storage = useNexusStorage();
+  const [currentSavings, setCurrentSavings] = React.useState(storage.data.emergencyFund.currentAmount.toString());
   const [stabilityAllocation, setStabilityAllocation] = React.useState("");
+
+  const handleSavingsChange = (value: string) => {
+    setCurrentSavings(value);
+    const amount = parseFloat(value) || 0;
+    storage.updateEmergencyFund({ currentAmount: amount });
+  };
 
   const { parsedSavings, parsedAllocation, nextMilestone, progressPercentage, timeToNextMilestone } = React.useMemo(() => {
     const pSavings = parseFloat(currentSavings) || 0;
@@ -80,7 +88,7 @@ export default function StabilityRoadmap() {
   }, [currentSavings, stabilityAllocation]);
 
   return (
-    <Card className="w-full max-w-4xl shadow-2xl border-none">
+    <Card className="w-full max-w-4xl mx-auto shadow-2xl border-none">
       <CardHeader>
         <CardTitle className="text-3xl font-bold tracking-tight text-center">Stability Roadmap</CardTitle>
         <CardDescription className="text-center">
@@ -98,7 +106,7 @@ export default function StabilityRoadmap() {
                 type="number"
                 placeholder="e.g., 500"
                 value={currentSavings}
-                onChange={(e) => setCurrentSavings(e.target.value)}
+                onChange={(e) => handleSavingsChange(e.target.value)}
                 className="text-lg"
               />
             </div>

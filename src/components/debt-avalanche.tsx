@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Trash, Zap } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,19 +15,19 @@ import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 type Debt = {
   id: string;
   name: string;
   amount: number;
   minPayment: number;
+};
+
+type TimelineEntry = {
+    debtId: string;
+    debtName: string;
+    payoffDate: string;
+    startingBalance: number;
 };
 
 const formatCurrency = (amount: number) => {
@@ -65,50 +65,93 @@ export default function DebtAvalanche() {
     setNewDebt(prev => ({ ...prev, [name]: value }));
   };
 
-  const { sortedDebts, totalMinPayments, monthlyFirepower, isValid, timeline, finalPayoffDate } = React.useMemo(() => {
+  const { sortedDebts, totalMinPayments, monthlyFirepower, isValid, timeline, finalPayoffDate, currentMissionPayment } = React.useMemo(() => {
     const parsedFirepower = parseFloat(growthAllocation) || 0;
     const parsedBonus = parseFloat(bonusPayment) || 0;
     const totalMin = debts.reduce((acc, debt) => acc + debt.minPayment, 0);
-    const availableFirepower = parsedFirepower + parsedBonus;
-    const isValid = debts.length > 0 && availableFirepower > totalMin;
+
+    const isValid = debts.length > 0 && parsedFirepower >= totalMin;
 
     if (!isValid) {
-      return { sortedDebts: [], totalMinPayments: totalMin, monthlyFirepower: availableFirepower, isValid, timeline: [], finalPayoffDate: null };
+      return { sortedDebts: [], totalMinPayments: totalMin, monthlyFirepower: parsedFirepower, isValid, timeline: [], finalPayoffDate: null, currentMissionPayment: 0 };
     }
 
     const sDebts = [...debts].sort((a, b) => a.amount - b.amount);
-    let remainingFirepower = availableFirepower;
-    let freedCashflow = 0;
-    let currentDate = new Date();
-    const timelineResult: { debt: Debt; payoffDate: string }[] = [];
+    
+    // Create a mutable copy of debts for simulation
+    let simDebts = sDebts.map(d => ({ ...d, balance: d.amount }));
+    
+    // Apply one-time bonus payment to the first debt
+    if (simDebts.length > 0) {
+      simDebts[0].balance -= parsedBonus;
+    }
 
-    for (const debt of sDebts) {
-        let remainingBalance = debt.amount;
-        let months = 0;
-        const extraPaymentForThisDebt = remainingFirepower - (totalMin - freedCashflow);
-        
-        while (remainingBalance > 0) {
-            remainingBalance -= (debt.minPayment + extraPaymentForThisDebt);
-            months++;
-            if (months > 1200) break; // Safety break
+    const timelineResult: TimelineEntry[] = [];
+    let freedCashflow = 0;
+    let months = 0;
+    let currentDate = new Date();
+    
+    const extraPayment = parsedFirepower - totalMin;
+    let missionPayment = 0;
+
+    while(simDebts.some(d => d.balance > 0)) {
+        months++;
+        if (months > 1200) break; // Safety break
+
+        let monthPayment = parsedFirepower + freedCashflow;
+
+        for (const debt of simDebts) {
+            if(debt.balance <= 0) continue;
+
+            // This is the target debt
+            const targetDebt = simDebts.find(d => d.balance > 0);
+            if (!targetDebt || debt.id !== targetDebt.id) {
+                const payment = Math.min(debt.minPayment, debt.balance);
+                debt.balance -= payment;
+                monthPayment -= payment;
+            }
         }
         
-        const payoffDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + months, 1);
-        timelineResult.push({ debt, payoffDate: payoffDate.toLocaleString('default', { month: 'long', year: 'numeric' }) });
+        // Apply remaining firepower to the target debt
+        const targetDebt = simDebts.find(d => d.balance > 0);
+        if (targetDebt) {
+             const payment = Math.min(monthPayment, targetDebt.balance);
+             if (months === 1) { // Calculate mission payment only on the first month
+                missionPayment = payment;
+             }
+             targetDebt.balance -= payment;
+        }
 
-        currentDate = payoffDate;
-        freedCashflow += debt.minPayment;
+        // Check for paid off debts
+        for (const debt of simDebts) {
+            if (debt.balance <= 0 && !timelineResult.find(t => t.debtId === debt.id)) {
+                const payoffDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + months -1, 1);
+                timelineResult.push({
+                    debtId: debt.id,
+                    debtName: debt.name,
+                    payoffDate: payoffDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
+                    startingBalance: debt.amount
+                });
+                freedCashflow += debt.minPayment;
+            }
+        }
     }
 
     const finalDate = timelineResult.length > 0 ? timelineResult[timelineResult.length - 1].payoffDate : null;
 
+    const timelineWithOriginalDebts = timelineResult.map(t => {
+        const originalDebt = debts.find(d => d.id === t.debtId)!;
+        return { debt: originalDebt, payoffDate: t.payoffDate };
+    });
+
     return {
       sortedDebts: sDebts,
       totalMinPayments: totalMin,
-      monthlyFirepower: availableFirepower,
+      monthlyFirepower: parsedFirepower,
       isValid,
-      timeline: timelineResult,
-      finalPayoffDate: finalDate
+      timeline: timelineWithOriginalDebts,
+      finalPayoffDate: finalDate,
+      currentMissionPayment: missionPayment
     };
   }, [debts, growthAllocation, bonusPayment]);
 
@@ -117,7 +160,7 @@ export default function DebtAvalanche() {
   return (
     <Card className="w-full max-w-4xl shadow-2xl">
       <CardHeader>
-        <CardTitle className="text-3xl font-bold tracking-tight text-center">Debt Avalanche</CardTitle>
+        <CardTitle className="text-3xl font-bold tracking-tight text-center">Debt Snowball</CardTitle>
         <CardDescription className="text-center">
           Your path to being debt-free. One step at a time. Together.
         </CardDescription>
@@ -196,7 +239,7 @@ export default function DebtAvalanche() {
                     </CardHeader>
                     <CardContent className="text-center">
                         <p className="text-muted-foreground">Total Monthly Payment</p>
-                        <p className="text-4xl font-bold text-primary-foreground">{formatCurrency(currentMission.debt.minPayment + (monthlyFirepower - totalMinPayments))}</p>
+                        <p className="text-4xl font-bold text-primary-foreground">{formatCurrency(currentMissionPayment)}</p>
                         <p className="font-semibold text-accent mt-2">Projected Payoff: {currentMission.payoffDate}</p>
                     </CardContent>
                 </Card>
